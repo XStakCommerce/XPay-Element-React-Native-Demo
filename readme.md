@@ -1,4 +1,4 @@
-# XPay Fusion
+# XPay Fusion & React Native Apps Integration
 
 XPay Fusion is a PCI DSS-compliant payment solution to collect payments from your customers on your webapp without them having to redirect to a third-party payment page.
 
