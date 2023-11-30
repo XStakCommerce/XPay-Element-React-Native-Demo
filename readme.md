@@ -30,3 +30,38 @@ npm i @xstak/xpay-element-react-native-stage
 
 Important: The XPay SDK supports custom styling and changing labels and placeholder texts of input fields as per your design to provide a seamless experience to your customers.
 
+4. When the customer clicks on the Place Order button, the frontend requests that the backend start the payment processing by passing relevant details about the cart (cart ID, cart total, etc.) and the customer name. Since the order has not been created yet, it is recommended that the cart ID be used at this step.
+
+5. The backend receives this request from the app, creates a payment intent by calling the Create Payment Intent API, and returns the response to the app:
+
+a. The cart ID should be added to the metadata object with the key order_reference and the Create Payment Intent call payload to reference it later. However, any other key or value can also be added to the metadata object.
+b. Important: Payment Intent ID is the single source of truth in XPay Fusion and it will be used as a reference for the payment and any possible future actions such as refund, etc.
+
+```
+curl --location 'https://xstak-pay-stg.xstak.com/public/v1/payment/intent' \
+--header 'x-account-id: your-account-id' \
+--header 'x-api-key: secret-key-of-account' \
+--header 'x-signature: HMAC-SHA 256 signature' \
+--header 'Content-Type: application/json' \
+--header 'x-idempotency-key: ' \
+--data-raw '{
+    "amount": 10,
+    "currency": "PKR",
+    "customer": {
+        "name": "",
+        "phone": "",
+        "email": ""
+    },
+    "shipping": {
+        "address1": "",
+        "city": "",
+        "country": "",
+        "province": "",
+        "zip": ""
+    },
+    "metadata": {
+        "order_reference": ""
+    }
+}'
+
+```
