@@ -75,3 +75,11 @@ const customer = {name: 'JOn Doe'}
 
 const { message, error } = await PaymentElement.confirmPayment(payment_intent_client_secret, customer)
 ```
+
+7. This confirmPayment SDK method will return a promise, which will be resolved with a response object citing either a success or failure message with the reason.
+
+a. If successful, the app can request the backend to create the order. It is recommended that the backend retrieve the payment intent from XPay by calling the Retrieve Payment Intent API, verifying the payment information, and then creating the order and informing the user.
+
+b. If unsuccessful, the app should show an error message to the customer.
+
+c. You can also set up webhooks to get notified of payment status asynchronously.
