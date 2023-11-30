@@ -84,6 +84,15 @@ b. If unsuccessful, the app should show an error message to the customer.
 
 c. You can also set up webhooks to get notified of payment status asynchronously.
 
+# How to run this demo?
+
+1. Clone the repo and install node modules
+2. In the server file, add required keys and run this file via
+   ```
+   node server.js
+   ```
+This file refers to your server environment in demo mode. In the integration with your product, this API call will be done on your server. And create PI API call should always be done from the server side.
+3. Run in iOS or Android mode.
 
 #### Invariant Violation: requireNativeComponent: "RNCWebView" was not found in the UIManager
 
