@@ -83,3 +83,13 @@ a. If successful, the app can request the backend to create the order. It is rec
 b. If unsuccessful, the app should show an error message to the customer.
 
 c. You can also set up webhooks to get notified of payment status asynchronously.
+
+
+#### Invariant Violation: requireNativeComponent: "RNCWebView" was not found in the UIManager
+
+Please follow the following steps:
+
+1. npx pod-install
+2. npx react-native run-ios
+3. 
+After installing the package, you need to update pods and then run the project again.
