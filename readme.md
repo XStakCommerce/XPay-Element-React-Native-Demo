@@ -65,3 +65,13 @@ curl --location 'https://xstak-pay-stg.xstak.com/public/v1/payment/intent' \
 }'
 
 ```
+
+c. Payment intent client secret is included in the response of the Create Payment Intent call. This client secret will be needed to capture the payment and pass it into the confirmPayment SDK method, as shown below.
+
+6. Once the app receives the payment intent from the backend, it will call the confirmPayment method of the XPay SDK and pass it the payment intent client secret.
+
+```
+const customer = {name: 'JOn Doe'}
+
+const { message, error } = await PaymentElement.confirmPayment(payment_intent_client_secret, customer)
+```
