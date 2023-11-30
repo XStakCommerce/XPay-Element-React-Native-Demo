@@ -100,5 +100,5 @@ Please follow the following steps:
 
 1. npx pod-install
 2. npx react-native run-ios
-3. 
+
 After installing the package, you need to update pods and then run the project again.
