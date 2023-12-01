@@ -92,7 +92,14 @@ c. You can also set up webhooks to get notified of payment status asynchronously
    node server.js
    ```
 This file refers to your server environment in demo mode. In the integration with your product, this API call will be done on your server. And create PI API call should always be done from the server side.
-3. Run in iOS or Android mode.
+
+3. Run in iOS or Android mode by executing
+
+```
+npm run android
+
+npm run ios
+```
 
 #### Invariant Violation: requireNativeComponent: "RNCWebView" was not found in the UIManager
 
