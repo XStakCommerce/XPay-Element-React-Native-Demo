@@ -1,111 +1,183 @@
-# XPay Fusion & React Native Apps Integration
+XPay Element for react native is an embedded payment system that allows you to collect payments directly from users within your applications. This package is highly customizable, enabling you to tailor the appearance and functionalities of the payment form to align seamlessly with your app's style and theme.
 
-XPay Fusion is a PCI DSS-compliant payment solution to collect payments from your customers on your webapp without them having to redirect to a third-party payment page.
+## **Features**
 
-## Integrating XPay Fusion
+### **Seamless Payment Integration**
 
-### To integrate XPay Fusion with your eCommerce store, you need to:
+Easily integrate payment functionalities into your  app without redirecting users to external applications or pages.
 
-1. Integrate Fusion APIs on the server side and
-2. Add the XPay embedded element on the client side by using the XPay React Native SDK.
+### **Custom Styling**
 
-### Step-by-step flow
-1. When your customer comes to the checkout page, they enter their card details into the card details form rendered in secure fields, enabled by the XPay Embedded Element. They then click the Place Order button.
+Style the payment SDK according to your app's theme with customizable labels, placeholders, and more.
 
-2. The Fusion Embedded Element can be added to your app as follows:
+### **Embedded Authentication**
 
-3. Import the XPay provider and Payment Element and add the required keys
+Conduct OTP authentication within your app, ensuring a smooth and secure user experience.
 
-```
+### **Event Handling**
+
+Utilize built-in events such as onBinDiscount and onReady to dynamically manage changes and validate inputs.
+
+## **Getting started**
+
+To incorporate the XPay embedded payment system into your  application, start by adding the following dependency:
+
+```dart
 npm i @xstak/xpay-element-react-native
 // for live env.
 
 npm i @xstak/xpay-element-react-native-stage
 // for staging env.
+```
 
+## **Usage**
+
+To use the XPay SDK in your app, follow these steps:
+
+### **Import the Package**
+
+```jsx
+import { XPayProvider, PaymentElement } from '@xstak/xpay-element-react-native';
+```
+
+### **Initialize the XPayProvider**
+
+Add XPayProvider to the app UI using the necessary credentials available on your XPay dashboard:
+
+```jsx
 <XPayProvider xpay={{publishableKey: '', hmacSecret: '', accountId: ''}}>
-        <PaymentElement onReady={(data) => {setEnabled(data.complete); console.log(data.complete)}} onBin />
+        <PaymentElement />
 </XPayProvider>
 ```
 
-Important: The XPay SDK supports custom styling and changing labels and placeholder texts of input fields as per your design to provide a seamless experience to your customers.
+## **Custom Styling**
 
-4. When the customer clicks on the Place Order button, the app requests your backend to start the payment processing by passing relevant details about the cart (cart ID, cart total, etc.) and the customer name. Since the order has not been created yet, it is recommended that the cart ID be used at this step.
+Customize the SDK's appearance to seamlessly integrate with your app's style and theme. The XPay SDK allows you to modify elements' style and appearance, making it adaptable to various design requirements.
 
-5. Your backend receives this request from the app, creates a payment intent by calling the Create Payment Intent API, and returns the response to the app:
-
-a. The cart ID should be added to the metadata object with the key order_reference and the Create Payment Intent call payload to reference it later. However, any other key or value can also be added to the metadata object.
-b. Important: Payment Intent ID is the single source of truth in XPay Fusion and it will be used as a reference for the payment and any possible future actions such as refund, etc.
-
+```jsx
+ const customStyle = {
+    fields: {
+      creditCard: {
+        label: "Enter your credit card",
+        placeholder: "1234 1234 1234 1234",
+      },
+      expiry: {
+        label: "Expiry Date",
+        placeholder: "MM/YY",
+      },
+      cvc: {
+        label: "CVC",
+        placeholder: "CVC",
+      },
+    },
+    style: {
+      label: {
+        color: "#3c4257",
+      },
+      input: {
+        borderWidth: 2,
+        borderRadius: 5,
+        padding: 10,
+        fontSize: 16,
+        borderColor: "#e6e6e6",
+      },
+      invalid: {
+        borderColor: "red",
+        borderWidth: 2,
+        borderRadius: 5,
+        color: "red",
+      },
+      onFocus: {
+        borderColor: "#C8DBF9",
+        color: "#3c4257",
+      },
+    },
+  }
 ```
-curl --location 'https://xstak-pay-stg.xstak.com/public/v1/payment/intent' \
---header 'x-account-id: your-account-id' \
---header 'x-api-key: secret-key-of-account' \
---header 'x-signature: HMAC-SHA 256 signature' \
---header 'Content-Type: application/json' \
---header 'x-idempotency-key: ' \
---data-raw '{
-    "amount": 10,
-    "currency": "PKR",
-    "customer": {
-        "name": "",
-        "phone": "",
-        "email": ""
-    },
-    "shipping": {
-        "address1": "",
-        "city": "",
-        "country": "",
-        "province": "",
-        "zip": ""
-    },
-    "metadata": {
-        "order_reference": ""
+
+### **Applying the Custom Styles**
+
+After configuring your styles, pass them to the XPayProvider to enhance the user interface:
+
+```jsx
+<XPayProvider xpay={{publishableKey: '', hmacSecret: '', accountId: ''}}>
+        <PaymentElement options={customStyle} />
+</XPayProvider>
+```
+
+The above styling properties are all optional; you can define only those you require, ensuring flexibility and customization according to your specific design needs.
+
+## **Element Events**
+
+Handle element-specific events to enhance the user experience:
+
+### **onReady Event**
+
+This event triggers when all form fields are valid and the form is ready for submission.
+
+```jsx
+<XPayProvider xpay={{publishableKey: '', hmacSecret: '', accountId: ''}}>
+        <PaymentElement onReady={(data) => {setEnabled(data.complete)}} />
+</XPayProvider>
+```
+
+### **onBinDiscount**
+
+Receive data related to the card's BIN as the user inputs their card number, which can be used for implementing discounts or promotional offers.
+
+```jsx
+<XPayProvider xpay={{publishableKey: '', hmacSecret: '', accountId: ''}}>
+        <PaymentElement onBinDiscount={(data) => {console.log(data)}} />
+</XPayProvider>
+```
+
+## **Confirming Payment**
+
+To proceed with the payment confirmation when all form fields are valid and the onReady event has returned true, you should perform a few necessary steps. First, ensure you have initiated a server-side API call to create a payment intent. This create intent API is responsible for generating the `clientSecret` , which are critical for securing the payment confirmation.
+
+### **Server-Side Payment Intent Creation**
+
+Before invoking the payment confirmation on the client side, your backend should call the create intent API to obtain:
+
+`clientSecret`: A secret key used to initiate the payment process securely.
+
+### **Confirming the Payment**
+
+Once you have the necessary keys from your backend, use the PaymentElement to call the confirmPayment method. Here’s how you can implement this in your app:
+
+```jsx
+const confirmPayment = async() => {
+     try {
+    // Assuming 'PaymentElement' is from package
+    const customer = {name: 'Jon Doe'}
+
+		const { message, error } = await PaymentElement.confirmPayment("client_secret_from_intent_api", customer)
+
+    if (error) {
+      // Handle payment failure
+      console.log("Payment failed: ", message);
+    } else {
+      // Handle payment success
+      console.log("Payment successful: ", message);
     }
-}'
-
+  } catch (e) {
+    // Handle exceptions
+    console.log("Payment Error: ", e);
+  }
+}
 ```
 
-c. Payment intent client secret is included in the response of the Create Payment Intent call. This client secret will be needed to capture the payment and pass it into the confirmPayment SDK method, as shown below.
+### **Confirm Payment Response**
 
-6. Once the app receives the payment intent from the backend, it will call the confirmPayment method of the XPay SDK and pass it the payment intent client secret.
+The response from confirmPayment contains two keys:
 
+`error`: A boolean that indicates whether the payment was unsuccessful. If true, it means the payment failed. `message`: A string containing a message from the server. This message provides details about the payment outcome or error information.
+
+## **Clean Method**
+
+The `clear` method is used to reset the payment form. This is especially useful if you have a button designed to clear the form or reset the checkout process.
+
+```jsx
+// Assuming 'PaymentElement' is imported from package
+PaymentElement.clear();
 ```
-const customer = {name: 'JOn Doe'}
-
-const { message, error } = await PaymentElement.confirmPayment(payment_intent_client_secret, customer)
-```
-
-7. This confirmPayment SDK method will return a promise, which will be resolved with a response object citing either a success or failure message with the reason.
-
-a. If successful, the app can request the backend to create the order. It is recommended that the backend retrieve the payment intent from XPay by calling the Retrieve Payment Intent API, verifying the payment information, and then creating the order and informing the user.
-
-b. If unsuccessful, the app should show an error message to the customer.
-
-c. You can also set up webhooks to get notified of payment status asynchronously.
-
-# How to run this demo?
-
-1. Clone the repo and install node modules
-2. In the server file, add required keys and run this file via
-   ```
-   node server.js
-   ```
-This file refers to your server environment in demo mode. In the integration with your product, this API call will be done on your server. And create PI API call should always be done from the server side.
-
-3. Run in iOS or Android mode by executing
-
-```
-npm run android
-
-npm run ios
-```
-
-#### Invariant Violation: requireNativeComponent: "RNCWebView" was not found in the UIManager
-
-Please follow the following steps:
-
-1. npx pod-install
-2. npx react-native run-ios
-
-After installing the package, you need to update pods and then run the project again.
